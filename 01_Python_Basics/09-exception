@@ -1,0 +1,27 @@
+#python异常处理
+import json
+
+def read_config(filepath: str) -> dict:
+    """读取 JSON 配置文件"""
+    file = None
+    try:
+        file = open(filepath, "r")
+        content = file.read()
+        config = json.loads(content)
+    except FileNotFoundError:
+        # 文件不存在，使用默认配置
+        print(f"[WARNING] 配置文件 {filepath} 不存在，使用默认配置")
+        config = {"model": "gpt-4", "temperature": 0.7}
+    except json.JSONDecodeError:
+        # JSON 格式错误，无法恢复，重新抛出
+        print(f"[ERROR] 配置文件 {filepath} 不是合法 JSON")
+        raise
+    else:
+        # 成功加载
+        print(f"[INFO] 成功加载配置：{filepath}")
+    finally:
+        # 无论是否异常，关闭文件
+        if file and not file.closed:
+            file.close()
+            print(f"[INFO] 文件已关闭：{filepath}")
+    return config
